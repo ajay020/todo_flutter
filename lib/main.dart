@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:todo/src/app.dart';
+import 'package:todo/src/splash_scree.dart';
 
 void main() {
-  runApp(const App());
+  runApp(
+    const MaterialApp(
+      home: SplashScreen(),
+    ),
+  );
 }

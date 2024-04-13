@@ -12,6 +12,10 @@ class App extends StatelessWidget {
           backgroundColor: Colors.blue,
           title: const Text(
             "Todo",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         body: const Todo(),

@@ -9,13 +9,13 @@ class Todo extends StatefulWidget {
 
 class _TodoState extends State<Todo> {
   final TextEditingController _controller = TextEditingController();
-  final List<String> _list = [];
+  final List<Task> _list = [];
 
   void _editTask(int index) async {
     String editedTask = await showDialog(
       context: context,
       builder: (context) {
-        String currentTask = _list[index];
+        String currentTask = _list[index].text;
         TextEditingController controller =
             TextEditingController(text: currentTask);
 
@@ -47,7 +47,7 @@ class _TodoState extends State<Todo> {
 
     if (editedTask.isNotEmpty) {
       setState(() {
-        _list[index] = editedTask;
+        _list[index].text = editedTask;
       });
     }
   }
@@ -57,45 +57,59 @@ class _TodoState extends State<Todo> {
     return Column(
       children: [
         Expanded(
-          child: ListView.separated(
+          child: ListView.builder(
             itemCount: _list.length,
-            separatorBuilder: (context, index) {
-              return const Divider(
-                color: Colors.red,
-                thickness: 2.0,
-                height: 0.0, // adjust the height of the divider
-              );
-            },
             itemBuilder: (context, index) {
-              return ListTile(
-                tileColor: Colors.white,
-                title: Text(
-                  _list[index],
-                ),
-                trailing: Container(
-                  color: Colors.amber,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                        ),
-                        onPressed: () {
+              return Card(
+                elevation: 4,
+                margin: const EdgeInsets.all(8),
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: ListTile(
+                    leading: Checkbox(
+                        value: _list[index].completed,
+                        onChanged: (val) {
                           setState(() {
-                            _list.removeAt(index);
+                            _list[index].completed = !_list[index].completed;
                           });
-                        },
+                        }),
+                    tileColor: Colors.white,
+                    title: Text(
+                      _list[index].text,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        decoration: _list[index].completed
+                            ? TextDecoration.lineThrough
+                            : null,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue, // Text color of the title
                       ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit,
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _list.removeAt(index);
+                            });
+                          },
                         ),
-                        onPressed: () {
-                          _editTask(index);
-                        },
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(
+                            Icons.edit,
+                          ),
+                          onPressed: () {
+                            _editTask(index);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -105,7 +119,7 @@ class _TodoState extends State<Todo> {
         Container(
           padding: const EdgeInsets.all(4.0),
           margin: const EdgeInsets.only(bottom: 28.0),
-          color: Colors.grey,
+          color: Colors.grey[100],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,11 +133,11 @@ class _TodoState extends State<Todo> {
                 ),
               ),
               Container(
-                color: Colors.deepPurple,
+                color: Colors.blue,
                 child: IconButton(
                   onPressed: () {
                     setState(() {
-                      _list.add(_controller.text);
+                      _list.add(Task(_controller.text, completed: false));
                       _controller.text = "";
                     });
                   },
@@ -139,4 +153,11 @@ class _TodoState extends State<Todo> {
       ],
     );
   }
+}
+
+class Task {
+  String text;
+  bool completed;
+
+  Task(this.text, {this.completed = false});
 }
